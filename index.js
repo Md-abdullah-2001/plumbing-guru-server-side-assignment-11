@@ -35,8 +35,15 @@ async function run() {
       const HomeServices = await cursor.limit(3).toArray();
       res.send(HomeServices);
     });
+    // get servicess page API
+    app.get("/services", async (req, res) => {
+      const query = {};
+      const cursor = serviceCollection.find(query);
+      const services = await cursor.toArray();
+      res.send(services);
+    });
     // single service data details
-    app.get("/homeservices/:id", async (req, res) => {
+    app.get("/services/:id", async (req, res) => {
       const id = req.params.id;
       console.log(id);
       const query = { _id: ObjectId(id) };
