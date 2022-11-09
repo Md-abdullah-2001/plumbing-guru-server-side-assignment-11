@@ -26,7 +26,10 @@ async function run() {
   try {
     const serviceCollection = client
       .db("plumbing-assignment")
-      .collection("services");
+      .collection("allServices");
+    const reviewCollection = client
+      .db("plumbing-assignment")
+      .collection("reviews");
 
     // get home page API
     app.get("/homeservices", async (req, res) => {
@@ -49,6 +52,27 @@ async function run() {
       const query = { _id: ObjectId(id) };
       const serviceDetail = await serviceCollection.findOne(query);
       res.send(serviceDetail);
+    });
+
+    app.post("/reviews", async (req, res) => {
+      console.log(req.body);
+      const review = req.body;
+
+      const cursor = await reviewCollection.insertOne(review);
+      console.log(cursor);
+      res.send(cursor);
+    });
+    app.get("/reviews", async (req, res) => {
+      let query = {};
+      console.log(req.query.id);
+      if (req.query.id) {
+        query = {
+          id: req.query.id,
+        };
+      }
+      const cursor = reviewCollection.find(query);
+      const services = await cursor.toArray();
+      res.send(services);
     });
   } finally {
   }
