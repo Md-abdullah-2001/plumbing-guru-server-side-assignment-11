@@ -68,8 +68,6 @@ async function run() {
     });
 
     app.post("/reviews", async (req, res) => {
-      const review = req.body;
-
       const cursor = await reviewCollection.insertOne(review);
 
       res.send(review);
