@@ -77,7 +77,6 @@ async function run() {
 
     // query reviews by id
     app.get("/reviews", async (req, res) => {
-      console.log(req.query.id);
       let query = {};
 
       if (req.query.id) {
