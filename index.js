@@ -1,6 +1,11 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const {
+  MongoClient,
+  ServerApiVersion,
+  ObjectId,
+  ObjectID,
+} = require("mongodb");
 require("dotenv").config();
 const app = express();
 const port = process.env.PORT || 5000;
@@ -15,7 +20,7 @@ app.get("/", (req, res) => {
 });
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.mbnoo25.mongodb.net/?retryWrites=true&w=majority`;
-// console.log(uri);
+
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -45,34 +50,65 @@ async function run() {
       const services = await cursor.toArray();
       res.send(services);
     });
+    // post addservice form
+    app.post("/services", async (req, res) => {
+      const addservice = req.body;
+
+      const cursor = await serviceCollection.insertOne(addservice);
+
+      res.send(addservice);
+    });
     // single service data details
     app.get("/services/:id", async (req, res) => {
       const id = req.params.id;
-      console.log(id);
+
       const query = { _id: ObjectId(id) };
       const serviceDetail = await serviceCollection.findOne(query);
       res.send(serviceDetail);
     });
 
     app.post("/reviews", async (req, res) => {
-      console.log(req.body);
       const review = req.body;
 
       const cursor = await reviewCollection.insertOne(review);
-      console.log(cursor);
-      res.send(cursor);
+
+      res.send(review);
     });
+
+    // reviews by id
     app.get("/reviews", async (req, res) => {
       let query = {};
-      console.log(req.query.id);
+
       if (req.query.id) {
         query = {
           id: req.query.id,
         };
       }
       const cursor = reviewCollection.find(query);
-      const services = await cursor.toArray();
-      res.send(services);
+      const reviews = await cursor.toArray();
+      res.send(reviews);
+    });
+
+    // get all reviews by user
+    app.get("/reviews-email", async (req, res) => {
+      let query = {};
+
+      if (req.query.email) {
+        query = {
+          email: req.query.email,
+        };
+      }
+      const cursor = reviewCollection.find(query);
+      const allReviews = await cursor.toArray();
+      res.send(allReviews);
+    });
+
+    app.delete("/reviews/:id", async (req, res) => {
+      const id = req.params.id;
+
+      const query = { _id: ObjectID(id) };
+      const result = await reviewCollection.deleteOne(query);
+      res.send(result);
     });
   } finally {
   }
